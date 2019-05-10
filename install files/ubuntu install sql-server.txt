@@ -1,0 +1,49 @@
+ubuntu要求内存最小为2G，小于2G会报错
+
+一、安装sql server 2017
+1.增长 Microsoft SQL Server Ubuntu 仓库
+	curl https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add - 
+
+2.导入公共存储库 GPG 密钥
+	add-apt-repository "$(curl https://packages.microsoft.com/config/ubuntu/16.04/mssql-server-2017.list)"
+
+3.安装 SQL Server 服务端
+	apt-get update 
+	apt-get install -y mssql-server
+
+4.设置 SA 暗码，并选择要安装的版本
+	/opt/mssql/bin/mssql-conf setup
+
+	根据业务需求选择安装的版本
+		systemctl status mssql-server 检查sql server启动是否成功
+
+5.启动/停止sql server服务
+	systemctl start/stop mssql-server
+
+6.设置开机自启动
+	systemctl enable mssql-server
+
+
+
+二、安装SQL Server命令行工具
+1.导入公共存储库GPG秘钥
+	curl https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
+
+2.注册Microsoft Ubuntu存储库
+	curl https://packages.microsoft.com/config/ubuntu/16.04/prod.list | sudo tee /etc/apt/sources.list.d/msprod.list
+
+3.更新源列表，并使用unixODBC开发人员包安装命令
+	sudo apt-get update 
+	sudo apt-get install mssql-tools unixodbc-dev
+
+4.添加/opt/mssql-tools/bin到环境变量中
+	echo 'export PATH="$PATH:/opt/mssql-tools/bin"' >> ~/.bash_profile
+	echo 'export PATH="$PATH:/opt/mssql-tools/bin"' >> ~/.bashrc
+	source ~/.bashrc （该命令必须执行，重新加载配置文件）
+
+5.测试是否能够连接
+	sqlcmd -S localhost -U SA -P <password>
+	或者：
+		sqlcmd -S localhost -U SA
+		输入密码
+
